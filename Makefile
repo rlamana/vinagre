@@ -1,4 +1,4 @@
-buildname = neutron
+buildname = vinagre
 
 # Directories
 builddir = .
