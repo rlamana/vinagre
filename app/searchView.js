@@ -23,6 +23,13 @@ function($, View, Animation, searchTemplate){
 	};
 
 	SearchView.prototype.events = {
+		'form submit': function (e) {
+			e.preventDefault();	
+		},
+
+		'.search-button click': function (e) {
+			e.preventDefault();	
+		} 
 	};
 
 	return SearchView;

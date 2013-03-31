@@ -2,7 +2,6 @@ define([
 	'system/view',
 	'tpl!system/tpl/application',
 
-	'css!system/css/basic',
 	'css!system/css/application'
 ],
 function(View, applicationTemplate) {

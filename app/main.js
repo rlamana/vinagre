@@ -3,14 +3,13 @@ define([
 
 	'app/searchView'
 ],
-function(Application, DisplayPage) {
+function(Application, SearchView) {
 
 	var MainApp = function() {
 		Application.call(this, 'main');
 
-		this.displayPage = new DisplayPage();
-
-		this.displayPage.appendTo(this.$el);
+		this.SearchView = new SearchView();
+		this.SearchView.appendTo(this.$el);
 	};
 
 	MainApp.prototype = Object.create(Application.prototype);
