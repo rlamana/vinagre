@@ -1,0 +1,62 @@
+
+@import "../../css/color.less";
+@import "../../css/prefix.less";
+
+#notification-stack {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+
+	z-index: 50000;
+
+	.display(flex);
+	.flex-flow(column);
+	.align-items(center);
+	.justify-content(flex-end);
+
+	.box-sizing(border-box);
+	padding: 0 10px;
+
+	.notification {
+		.display('flex');
+		.flex-flow(row);
+
+		width: 100%;
+
+		color: @light-text;
+		background-color: #2c3543;
+		opacity: 0;
+
+		.box-sizing(border-box);
+		padding: 20px;
+		margin: 0;
+		margin-bottom: 10px;
+
+		& > .content {
+			.flex(1);
+			text-align: center;
+
+			& > h1 {
+				font-size: 20px;
+				font-weight: bold;
+				margin: 0;
+				padding: 0;
+			}
+
+			& > p {
+				font-size: 20px;
+				margin: 0;
+				padding: 0;
+			}
+		}
+
+		&.open {
+			opacity: .95;
+		}
+
+		&.warning {
+			background-color: #69282A;
+		}
+	}	
+}

@@ -1,0 +1,97 @@
+
+@import "prefix.less";
+@import "color.less";
+
+html {
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	height: 100%;
+	
+	font-size: 12px;
+	
+	-webkit-user-select: none;
+	-webkit-text-size-adjust: none;
+
+	font-family: Arial, sans-serif;
+	background: @app-bg;
+
+	/* activate the GPU for compositing each page */
+	-webkit-transform: translate3d(0,0,0);
+
+	overflow: hidden;
+}
+
+button, 
+input {
+	display: block;
+	height: 50px;
+
+	margin: 8px;
+	padding: 0 10px;
+	font-size: 19px;
+
+	border: 0;
+	border-radius: 0;
+
+	-webkit-appearance: none;
+
+	&.disabled, &[disabled=true], &:disabled {	
+		-webkit-appearance: none;
+		opacity: 1;
+
+		.transition(all .5s .2s ease);
+	}
+}
+
+/**
+ * Input widget
+ */
+input {
+	background-color: #f7f7f7;
+	border: 1px solid #d2d2d2;
+
+	&.disabled, &[disabled=true], &:disabled {	
+		color: #bababa;
+	}
+}
+
+::-webkit-input-placeholder {
+   color: @placeholder;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: @placeholder;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: @placeholder;  
+}
+
+:-ms-input-placeholder {  
+   color: @placeholder;  
+}
+
+
+/**
+ * Button Widget
+ */
+
+button {
+	font-weight: bold;
+	color: @light-text;
+	
+	background-color: @dark-bg;
+	border: 1px solid @dark-border;
+
+	&.touched {
+		background-color: @dark-bg-hover;
+	}
+
+	&.disabled, &[disabled=true], &:disabled {	
+		background-color: #999999;
+		color: #bbb;
+	}
+}

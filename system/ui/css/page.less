@@ -1,0 +1,151 @@
+
+@import "../../css/prefix.less";
+@import "../../css/color.less";
+
+.app {
+	.page-wrapper {
+		position: relative;
+		height:100%;
+		width: 100%;
+
+		background: @app-bg;
+
+		.display(flex);
+		.flex-flow(column);
+	}
+
+  	.page {
+  		position: relative;
+
+  		height: 100%;
+		width: 100%;
+
+  		.display(flex);
+		.flex-flow(row);
+
+	  	header.page-header {
+	  		position:relative;
+
+	  		.display(flex);
+			.flex-flow(row);
+			.align-items(center);
+
+			height: 50px;
+			
+			border-bottom: 1px solid #131721;
+			background-color: #2c3543;
+
+			&[hidden] {
+				display: none;
+			}
+			
+
+			h1.page-title {
+				.flex(1);
+
+				color: #f6f6f6;
+				font-size: 19px;
+				font-weight: bold;
+				text-align: center;
+			}
+
+			.page-button {
+				position: relative;
+				height: 100%;
+				width: 110px;
+
+				button {
+					.transition(opacity .2s ease);
+					opacity: 1;
+
+					.display(flex);
+					.flex-flow(row);
+					.align-items(center);
+
+					height: 100%;
+					min-width: 20px;
+
+					font-size: 14px;
+					font-weight: bold;
+
+					border: 0;
+					margin: 0;
+					padding: 0;
+					background: transparent;
+
+					.icon {
+						width: 20px;
+						height: 20px;
+						background-size: 20px 20px;
+
+						margin: 5px;
+					}
+
+					label {
+						.display(flex);
+						.flex-flow(row);
+						.align-items(center);
+
+						.flex(1);
+					}
+				
+					&.disabled {
+						opacity: 0;
+					}
+				}
+			}
+
+			.page-right-button button {
+				position: absolute;
+				right: 0;
+
+				padding: 0 10px;
+			}
+
+			.page-left-button button {
+				position: absolute;
+				left: 0;
+
+				padding-right: 10px;
+			}
+	  	}
+
+	  	.page-button.touched  {
+	  		button {
+				background-color: #516278 !important;
+			}
+		}
+
+	  	section.page-content {
+	  		position: relative;
+
+	  		.flex(1);
+	  	}
+
+	  	footer.page-footer {
+	  		.display(flex);
+			.flex-flow(row);
+
+	  		background-color: @light-bg;
+	  		border-top: 1px solid #a9a9a9;
+
+	  		height: 48px;
+	  		padding: 5px;
+
+	  		& > button {
+	  			margin: 0;
+
+	  			height: 100%;
+
+	  			font-size: .9em;
+	  			background-color: @light-bg-contrast;
+	  			border-color: @light-border-contrast;
+	  			color: @dark-text;
+	  		}
+
+	  		&[hidden] {
+	  			display: none;
+	  		}
+	  	}
+	}
+}

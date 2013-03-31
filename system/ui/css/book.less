@@ -1,0 +1,16 @@
+@import "../../css/prefix.less";
+
+.app {
+	.book {
+		position: relative;
+		height:100%;
+		width: 100%;
+
+		.display(flex);
+		.flex-flow(row);
+
+		& > .page {
+			position: absolute;
+		}
+	}
+}

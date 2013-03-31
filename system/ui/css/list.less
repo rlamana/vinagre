@@ -1,0 +1,83 @@
+@import "../../css/prefix.less";
+
+.app {
+	.list {
+		padding:0;
+		margin:0;
+		border:0;
+		border-bottom: 1px solid #c8cacd;
+	 	
+		list-style: none;
+	
+		li {
+	 		.display(flex);
+			.flex-flow(row);
+			.align-items(center);
+
+			border-top: 1px solid #c8cacd;
+			background-color: #fafafa;
+			
+			color: #666666;
+			font-size: 16px;
+
+			height: 60px;
+
+			.text {
+				.flex(1);
+				text-overflow: ellipsis;
+				max-height: 40px;
+				overflow: hidden;
+
+				padding: 0 30px;
+			}
+		}
+
+		li.touched {
+			background-color: #EAEBEB;
+		}
+	}
+
+	.puller {
+		.display(flex);
+		.flex-flow(row);
+		.align-items(center);
+
+		-webkit-box-pack: center;
+		box-pack: center;
+		-webkit-justify-content: center;
+		justify-content: center;
+	
+		color: #666666;
+		font-size: 16px;
+
+		height: 60px;
+
+		.puller-label {
+			font-weight: 700;
+			color: #9A9B9B;
+			margin-left: 10px;
+		}
+
+		.puller-icon img {
+			height: 23px;
+		}
+	}
+
+	.puller-down {
+		border: 0;
+	}
+
+	.scrollable {
+		position:absolute;
+		top: 0;
+		bottom: 0; 
+		left: 0; 
+		right: 0;
+
+		font-size: 15px;
+
+		.scrollable-wrapper {
+			min-height: 100%;
+		}
+	}
+}
