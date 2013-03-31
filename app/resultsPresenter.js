@@ -4,20 +4,20 @@ define(['$', 'Underscore'], function ($, _) {
 	var serverAddr = 'http://192.168.1.5:3000/v0';
 
 	var fixture = [{
-		id: 0,
+		idstartup: 0,
 		name: 'Sunrise',
-		description: 'Building a better calendar',
+		short_desc: 'Building a better calendar',
 		url: 'http://www.sunrise.am/'
 	}, {
-		id: 1,
+		idstartup: 1,
 		name: 'Stellarkite',
-		description: 'Stellarkite is a multidisciplinary group of scientists ' +
+		short_desc: 'Stellarkite is a multidisciplinary group of scientists ' +
 			'and engineers born to geekify the world',
 		url: 'http://www.stellarkite.com'
 	}, {
-		id: 2,
+		idstartup: 2,
 		name: 'Lovely',
-		description: 'Building a platform for apartment rentals - a $10bn market opportunity',
+		short_desc: 'Building a platform for apartment rentals - a $10bn market opportunity',
 		url: 'http://livelovely.com/'
 	}];
 
@@ -36,12 +36,14 @@ define(['$', 'Underscore'], function ($, _) {
 			self.driver.render(fixture);
 
 			// $.ajax({
-			// 	url: serverAddr + '/startup',
+			// 	url: serverAddr + '/startups-search',
 			// 	data: {
-			// 		keywords: keywords
+			// 		query: keywords
 			// 	},
 			// 	success: function(data, status, xhr) {
 			// 		self.driver.render(data);
+			// 	},
+			// 	error: function(xhr, status, error) {
 			// 	},
 			// 	crossDomain: true,
 			// 	dataType: 'jsonp'
