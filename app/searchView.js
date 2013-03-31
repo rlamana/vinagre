@@ -27,14 +27,15 @@ function($, View, Animation, searchTemplate){
 	};
 
 	SearchView.prototype.events = {
-		'form submit': function (e) {
-			debugger;
-			this.emit('search', this.$input.val())
-			e.preventDefault();	
+		'submit': function (e) {
+			e.preventDefault();
+			this.emit('search', this.$input.val());
+			return false;
 		},
 
 		'.search-button click': function (e) {
-			e.preventDefault();	
+			/*this.$el.submit();
+			e.preventDefault();*/
 		} 
 	};
 

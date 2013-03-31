@@ -43,10 +43,7 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 	};
 
 	ResultsListView.prototype.renderResult = function (data) {
-		this.$el.append(resultTemplate({
-			id: 0,
-			name: "Startup-Name"
-		}));
+		this.$el.append(resultTemplate(data));
 	};
 
 	ResultsListView.prototype.events = {
