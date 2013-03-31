@@ -24,7 +24,5 @@ function(Application, SearchView, ResultsListView) {
 
 	MainApp.prototype = Object.create(Application.prototype);
 
-
-
 	return MainApp;
 });

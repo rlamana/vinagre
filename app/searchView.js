@@ -16,14 +16,19 @@ function($, View, Animation, searchTemplate){
 
 		this.$input = this.$el.find('input.search');
 
+
 		Animation.play('fadeInDown', this.$el, this.init.bind(this));
 
 		this.registerSignals(['search']);
+		this.init();
 	};
 
 	SearchView.prototype = Object.create(View.prototype, {});
 
 	SearchView.prototype.init = function () {
+		View.queue(function(){
+			this.$input.focus();
+		}, this);
 	};
 
 	SearchView.prototype.events = {

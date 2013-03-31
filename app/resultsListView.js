@@ -26,7 +26,15 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 	ResultsListView.prototype = Object.create(View.prototype);
 
 	ResultsListView.prototype.init = function () {
-		this.search();
+	};
+
+	ResultsListView.prototype.empty = function (callback, scope) {
+		Animation.play('fadeOutDown', this.$el, function(){
+			this.$el.html('');
+
+			if(callback)
+				callback.apply(scope||this);
+		}, this);
 	};
 
 	ResultsListView.prototype.search = function (keywords) {
@@ -37,13 +45,20 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 		if (!(data instanceof Array)) 
 			return;
 
-		data.forEach(function(values, index) {
-			this.renderResult(values);
+		this.empty(function(){
+			// Show new results
+			data.forEach(function(values, index) {
+				this.renderResult(values, index*200);
+			}, this);
 		}, this);
 	};
 
-	ResultsListView.prototype.renderResult = function (data) {
-		this.$el.append(resultTemplate(data));
+	ResultsListView.prototype.renderResult = function (data, delay) {
+		View.queue(function() {
+			$result = resultTemplate(data);
+			this.$el.append($result);
+			Animation.play('fadeInUp', $result);
+		}, this, delay||0);
 	};
 
 	ResultsListView.prototype.events = {
