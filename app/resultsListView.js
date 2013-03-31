@@ -9,14 +9,16 @@ define([
 	'css!app/css/results'
 ],
 function($, View, Animation, ResultsPresenter, resultTemplate) {
+	'use strict';
+
 	var ResultsListView = function() {
 		View.call(this);
 
 		this.$el = $('<ul class="results-list" />');
 		this.$el.listen(this.events, this);
 
-		// Initialize Presenter
-		new ResultsPresenter(this);
+		// Instantiate and initialize Presenter
+		ResultsPresenter.create(this);
 
 		this.registerSignals(['search']);
 
@@ -42,7 +44,7 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 	};
 
 	ResultsListView.prototype.render = function (data) {
-		if (!(data instanceof Array)) 
+		if (!(data instanceof Array))
 			return;
 
 		this.empty(function(){
@@ -55,7 +57,7 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 
 	ResultsListView.prototype.renderResult = function (data, delay) {
 		View.queue(function() {
-			$result = resultTemplate(data);
+			var $result = resultTemplate(data);
 			this.$el.append($result);
 			Animation.play('fadeInUp', $result);
 		}, this, delay||0);

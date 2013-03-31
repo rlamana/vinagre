@@ -7,7 +7,7 @@ systemdir = system
 
 # Less compiler
 less-systemfiles = $(wildcard ${systemdir}/css/*.less) $(wildcard ${systemdir}/ui/css/*.less)
-less-appfiles = $(wildcard ${appdir}/css/*.less) 
+less-appfiles = $(wildcard ${appdir}/css/*.less)
 
 # Handlebars template files
 tpl-systemfiles = $(wildcard ${systemdir}/tpl/*.tpl) $(wildcard ${systemdir}/ui/tpl/*.tpl)
@@ -21,16 +21,22 @@ all: debug release
 show-includes:
 	@echo $(mobile-includes)
 
+jshint:
+	@echo Executing jshint...
+	@echo ---------------------------------------
+	@jshint $(appdir)
+	@echo done.
+
 
 # Mobile library
 
-debug: templates less
+debug: jshint templates less
 	@echo Compiling '${buildname}' for debugging...
 	@echo ---------------------------------------
 	r.js -o build.js mainConfigFile=boot.js name="boot" out=${builddir}/${buildname}.js optimize=none
 	@echo done.
 
-release: templates less
+release: jshint templates less
 	@echo Compiling '${buildname}' for production...
 	@echo ----------------------------------------
 	r.js -o build.js mainConfigFile=boot.js name="boot" out=${builddir}/${buildname}.min.js optimize=uglify
@@ -80,7 +86,7 @@ clean: clean-templates clean-less
 	rm -f ${builddir}/${buildname}.js
 	rm -f ${builddir}/${buildname}.min.js
 	@echo
-	
+
 install:
 	npm install -g requirejs
 	npm install -g less
@@ -90,6 +96,6 @@ install:
 install-test:
 	npm install -g testacular@0.6.0
 	npm install -g mocha
-	
+
 
 

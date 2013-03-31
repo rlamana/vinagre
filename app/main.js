@@ -7,6 +7,7 @@ define([
 	'css!app/css/main'
 ],
 function(Application, SearchView, ResultsListView) {
+	'use strict';
 
 	var MainApp = function() {
 		Application.call(this, 'main');
@@ -19,7 +20,7 @@ function(Application, SearchView, ResultsListView) {
 
 		this.searchView.on('search', function(keywords){
 			this.resultsListView.search(keywords);
-		}, this)
+		}, this);
 	};
 
 	MainApp.prototype = Object.create(Application.prototype);

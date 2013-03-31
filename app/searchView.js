@@ -6,16 +6,16 @@ define([
 	'tpl!app/tpl/search',
 	'css!app/css/search'
 ],
-function($, View, Animation, searchTemplate){
+function($, View, Animation, searchTemplate) {
+	'use strict';
 
 	var SearchView = function() {
 		View.call(this);
 
-		this.$el = new searchTemplate();
+		this.$el = searchTemplate();
 		this.$el.listen(this.events, this);
 
 		this.$input = this.$el.find('input.search');
-
 
 		Animation.play('fadeInDown', this.$el, this.init.bind(this));
 
@@ -38,10 +38,10 @@ function($, View, Animation, searchTemplate){
 			return false;
 		},
 
-		'.search-button click': function (e) {
-			/*this.$el.submit();
-			e.preventDefault();*/
-		} 
+		/*'.search-button click': function (e) {
+			this.$el.submit();
+			e.preventDefault();
+		}*/
 	};
 
 	return SearchView;
