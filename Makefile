@@ -28,7 +28,7 @@ jshint:
 	@echo done.
 
 
-# Mobile library
+# Compilation
 
 debug: jshint templates less
 	@echo Compiling '${buildname}' for debugging...

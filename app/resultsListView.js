@@ -3,59 +3,45 @@ define([
 	'system/view',
 	'system/ui/animation',
 
-	'app/resultsPresenter',
 	'tpl!app/tpl/result',
 
 	'css!app/css/results'
 ],
-function($, View, Animation, ResultsPresenter, resultTemplate) {
+function($, View, Animation, resultTemplate) {
 	'use strict';
 
-	var ResultsListView = function() {
+	var ResultsListView = function(data) {
 		View.call(this);
 
 		this.$el = $('<ul class="results-list" />');
 		this.$el.listen(this.events, this);
 
-		// Instantiate and initialize Presenter
-		ResultsPresenter.create(this);
-
-		this.registerSignals(['search']);
-
-		this.init();
+		if(data)
+			this.render(data);
 	};
 
 	ResultsListView.prototype = Object.create(View.prototype);
 
-	ResultsListView.prototype.init = function () {
-	};
-
-	ResultsListView.prototype.empty = function (callback, scope) {
+	ResultsListView.prototype.remove = function (callback, scope) {
 		Animation.play('fadeOutDown', this.$el, function(){
-			this.$el.html('');
+			this.$el.remove();
 
 			if(callback)
 				callback.apply(scope||this);
 		}, this);
 	};
 
-	ResultsListView.prototype.search = function (keywords) {
-		this.emit('search', keywords||'');
-	};
-
 	ResultsListView.prototype.render = function (data) {
 		if (!(data instanceof Array))
 			return;
 
-		this.empty(function(){
-			// Show new results
-			data.forEach(function(values, index) {
-				this.renderResult(values, index*200);
-			}, this);
+		// Show new results
+		data.forEach(function(values, index) {
+			this._renderResult(values, index*200);
 		}, this);
 	};
 
-	ResultsListView.prototype.renderResult = function (data, delay) {
+	ResultsListView.prototype._renderResult = function (data, delay) {
 		View.queue(function() {
 			var $result = resultTemplate(data);
 			this.$el.append($result);

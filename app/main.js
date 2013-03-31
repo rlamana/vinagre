@@ -2,11 +2,11 @@ define([
 	'system/application',
 
 	'app/searchView',
-	'app/resultsListView',
+	'app/resultsView',
 
 	'css!app/css/main'
 ],
-function(Application, SearchView, ResultsListView) {
+function(Application, SearchView, ResultsView) {
 	'use strict';
 
 	var MainApp = function() {
@@ -15,11 +15,11 @@ function(Application, SearchView, ResultsListView) {
 		this.searchView = new SearchView();
 		this.searchView.appendTo(this.$el);
 
-		this.resultsListView = new ResultsListView();
-		this.resultsListView.appendTo(this.$el);
+		this.resultsView = new ResultsView();
+		this.resultsView.appendTo(this.$el);
 
 		this.searchView.on('search', function(keywords){
-			this.resultsListView.search(keywords);
+			this.resultsView.search(keywords);
 		}, this);
 	};
 

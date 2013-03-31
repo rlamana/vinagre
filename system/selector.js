@@ -50,7 +50,7 @@ define(['$', 'Underscore'], function($, _) {
 	};
 
 	/**
-	 * Extend $ object with methods to connect 
+	 * Extend $ object with methods to connect
 	 * dom events with Driver listeners
 	 */
 	$.fn.extend({
