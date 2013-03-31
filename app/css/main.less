@@ -1,5 +1,22 @@
 @import "../../system/css/prefix.less";
 
+body {
+	height: 100%;
+
+	-webkit-user-select: none;
+	-webkit-text-size-adjust: none;
+
+	/* activate the GPU for compositing each page */
+	-webkit-transform: translate3d(0,0,0);
+	background-color: #f2f3f5;
+
+	/*background: url(../img/bg-blur.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;*/
+}
+
 .app-main {
 	height: 100%;
 
@@ -7,7 +24,7 @@
 	.flex-flow(column);
 	.align-items(center);
 
-	background-color: #f2f3f5;
+	background-color: transparent;
 
 	font-family: 'Cabin', sans-serif;
 }
