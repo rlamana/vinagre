@@ -1,4 +1,4 @@
-vinagre
+Vinagre
 =======
 
-Vinagre
+The startup search engine javascript client
