@@ -14,7 +14,11 @@ function($, View, Animation, searchTemplate){
 		this.$el = new searchTemplate();
 		this.$el.listen(this.events, this);
 
+		this.$input = this.$el.find('input.search');
+
 		Animation.play('fadeInDown', this.$el, this.init.bind(this));
+
+		this.registerSignals(['search']);
 	};
 
 	SearchView.prototype = Object.create(View.prototype, {});
@@ -24,6 +28,8 @@ function($, View, Animation, searchTemplate){
 
 	SearchView.prototype.events = {
 		'form submit': function (e) {
+			debugger;
+			this.emit('search', this.$input.val())
 			e.preventDefault();	
 		},
 
