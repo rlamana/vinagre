@@ -52,7 +52,7 @@ define(['$', 'Underscore'], function ($, _) {
 			// 	crossDomain: true,
 			// 	dataType: 'jsonp'
 			// });
-		}, 500)
+		}, 1000)
 	};
 
 	ResultsPresenter.create = function(driver) {
