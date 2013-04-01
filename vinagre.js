@@ -1259,7 +1259,7 @@ define('system/selector',['$', 'Underscore'], function($, _) {
 	};
 
 	/**
-	 * Extend $ object with methods to connect 
+	 * Extend $ object with methods to connect
 	 * dom events with Driver listeners
 	 */
 	$.fn.extend({
@@ -3852,8 +3852,28 @@ function($, View, Animation, searchTemplate) {
 
 	return SearchView;
 });
-define('app/resultsPresenter',[], function () {
+define('app/resultsPresenter',['$', 'Underscore'], function ($, _) {
 	
+
+	// var serverAddr = 'http://192.168.1.5:3000/v0';
+
+	var fixture = [{
+		id: 0,
+		name: 'Sunrise',
+		description: 'Building a better calendar',
+		url: 'http://www.sunrise.am/'
+	}, {
+		id: 1,
+		name: 'Stellarkite',
+		description: 'Stellarkite is a multidisciplinary group of scientists ' +
+			'and engineers born to geekify the world',
+		url: 'http://www.stellarkite.com'
+	}, {
+		id: 2,
+		name: 'Lovely',
+		description: 'Building a platform for apartment rentals - a $10bn market opportunity',
+		url: 'http://livelovely.com/'
+	}];
 
 	var ResultsPresenter = function (driver) {
 		this.driver = driver;
@@ -3861,30 +3881,32 @@ define('app/resultsPresenter',[], function () {
 	};
 
 	ResultsPresenter.prototype.slots = {
-		'search': function (keywords) {
+		'search': _.throttle(function (keywords) {
+			var self = this;
+
 			// search
 			keywords = keywords || '';
 
-			var fakeData = [{
-				id: 0,
-				name: 'Sunrise',
-				description: 'Building a better calendar',
-				url: 'http://www.sunrise.am/'
-			}, {
-				id: 1,
-				name: 'Stellarkite',
-				description: 'Stellarkite is a multidisciplinary group of scientists ' +
-					'and engineers born to geekify the world',
-				url: 'http://www.stellarkite.com'
-			}, {
-				id: 2,
-				name: 'Lovely',
-				description: 'Building a platform for apartment rentals - a $10bn market opportunity',
-				url: 'http://livelovely.com/'
-			}];
+			self.driver.render(fixture);
 
-			this.driver.render(fakeData);
-		}
+			// $.ajax({
+			// 	url: serverAddr + '/startups-search',
+			// 	data: {
+			// 		query: keywords
+			// 	},
+			// 	success: function(data) {
+			// 		/* jshint camelcase:false */
+			// 		self.driver.render({
+			// 			id: data.idstartup,
+			// 			name: data.name,
+			// 			description: data.short_desc,
+			// 			url: data.url
+			// 		});
+			// 	},
+			// 	crossDomain: true,
+			// 	dataType: 'jsonp'
+			// });
+		}, 500)
 	};
 
 	ResultsPresenter.create = function(driver) {
@@ -3932,59 +3954,45 @@ define('app/resultsListView',[
 	'system/view',
 	'system/ui/animation',
 
-	'app/resultsPresenter',
 	'tpl!app/tpl/result',
 
 	'css!app/css/results'
 ],
-function($, View, Animation, ResultsPresenter, resultTemplate) {
+function($, View, Animation, resultTemplate) {
 	
 
-	var ResultsListView = function() {
+	var ResultsListView = function(data) {
 		View.call(this);
 
 		this.$el = $('<ul class="results-list" />');
 		this.$el.listen(this.events, this);
 
-		// Instantiate and initialize Presenter
-		ResultsPresenter.create(this);
-
-		this.registerSignals(['search']);
-
-		this.init();
+		if(data)
+			this.render(data);
 	};
 
 	ResultsListView.prototype = Object.create(View.prototype);
 
-	ResultsListView.prototype.init = function () {
-	};
-
-	ResultsListView.prototype.empty = function (callback, scope) {
+	ResultsListView.prototype.remove = function (callback, scope) {
 		Animation.play('fadeOutDown', this.$el, function(){
-			this.$el.html('');
+			this.$el.remove();
 
 			if(callback)
 				callback.apply(scope||this);
 		}, this);
 	};
 
-	ResultsListView.prototype.search = function (keywords) {
-		this.emit('search', keywords||'');
-	};
-
 	ResultsListView.prototype.render = function (data) {
 		if (!(data instanceof Array))
 			return;
 
-		this.empty(function(){
-			// Show new results
-			data.forEach(function(values, index) {
-				this.renderResult(values, index*200);
-			}, this);
+		// Show new results
+		data.forEach(function(values, index) {
+			this._renderResult(values, index*200);
 		}, this);
 	};
 
-	ResultsListView.prototype.renderResult = function (data, delay) {
+	ResultsListView.prototype._renderResult = function (data, delay) {
 		View.queue(function() {
 			var $result = resultTemplate(data);
 			this.$el.append($result);
@@ -3997,15 +4005,59 @@ function($, View, Animation, ResultsPresenter, resultTemplate) {
 
 	return ResultsListView;
 });
+define('app/resultsView',[
+	'system/selector',
+	'system/view',
+	'system/ui/animation',
+
+	'app/resultsPresenter',
+	'app/resultsListView'
+],
+function($, View, Animation, ResultsPresenter, ResultsListView) {
+	
+
+	var ResultsView = function() {
+		View.call(this);
+
+		this.$el = $('<div class="results" />');
+		this.$el.listen(this.events, this);
+
+		// Instantiate and initialize Presenter
+		ResultsPresenter.create(this);
+
+		this.registerSignals(['search']);
+	};
+
+	ResultsView.prototype = Object.create(View.prototype);
+
+	ResultsView.prototype.search = function (keywords) {
+		this.emit('search', keywords||'');
+	};
+
+	ResultsView.prototype.render = function (data) {
+		var list = new ResultsListView(data);
+
+		if(this.listView)
+			this.listView.remove();
+
+		this.listView = list;
+		this.listView.appendTo(this.$el);
+	};
+
+	ResultsView.prototype.events = {
+	};
+
+	return ResultsView;
+});
 define('app/main',[
 	'system/application',
 
 	'app/searchView',
-	'app/resultsListView',
+	'app/resultsView',
 
 	'css!app/css/main'
 ],
-function(Application, SearchView, ResultsListView) {
+function(Application, SearchView, ResultsView) {
 	
 
 	var MainApp = function() {
@@ -4014,11 +4066,11 @@ function(Application, SearchView, ResultsListView) {
 		this.searchView = new SearchView();
 		this.searchView.appendTo(this.$el);
 
-		this.resultsListView = new ResultsListView();
-		this.resultsListView.appendTo(this.$el);
+		this.resultsView = new ResultsView();
+		this.resultsView.appendTo(this.$el);
 
 		this.searchView.on('search', function(keywords){
-			this.resultsListView.search(keywords);
+			this.resultsView.search(keywords);
 		}, this);
 	};
 

@@ -18,9 +18,6 @@ cssbuild = ${builddir}/${buildname}.css
 
 all: debug release
 
-show-includes:
-	@echo $(mobile-includes)
-
 jshint:
 	@echo Executing jshint...
 	@echo ---------------------------------------
