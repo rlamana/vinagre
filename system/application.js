@@ -1,11 +1,12 @@
 define([
+	'system/core/extend',
 	'system/view',
 	'tpl!system/tpl/application',
 
 	'css!system/css/application'
 ],
-function(View, applicationTemplate) {
-	var global = this;
+function(extend, View, applicationTemplate) {
+	'use strict';
 
 	var Application = function(appname) {
 		this.$el = applicationTemplate({
@@ -17,23 +18,23 @@ function(View, applicationTemplate) {
 		}).bind(this));
 	};
 
-	Application.prototype = Object.create(View.prototype);
+	extend(Application.prototype, View.prototype, {
+		init:function () {
+			this.$el.hide();
 
-	Application.prototype.init = function () {
-		this.$el.hide();
+			// Prevent from scrolling when fullscreen
+			$(document.body).on('touchmove', function (e) {
+				e.preventDefault();
+			});
 
-		// Prevent from scrolling when fullscreen
-		$(document.body).on('touchmove', function (e) {
-			e.preventDefault();
-		});
+			this.render();
+		},
 
-		this.render();
-	};
-
-	Application.prototype.render = function () {
-		$('body').append(this.$el);
-		this.$el.show();
-	};
+		render: function () {
+			$('body').append(this.$el);
+			this.$el.show();
+		}
+	});
 
 	return Application;
 });
