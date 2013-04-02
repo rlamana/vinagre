@@ -1,38 +1,16 @@
 define(function(require) {
 	'use strict';
 
-	var extend = require('system/core/extend');
+	var inherit = require('system/core/inherit');
 	var Emitter = require('system/core/emitter');
 
 	var View = function() {
 		Emitter.call(this);
 	};
 
-	View.prototype = Object.create(Object.prototype, {
-		slots: {
-			set: function(slots) {
-				this._slots = extend({}, this._slots, slots);
-			},
-
-			get: function() {
-				return this._slots;
-			}
-		},
-
-		events: {
-			set: function(events) {
-				this._events = extend({}, this._events, events);
-			},
-
-			get: function() {
-				return this._events;
-			}
-		}
-	});
-
-	View.prototype = extend(View.prototype, Emitter.prototype, {
+	View.prototype = inherit(Emitter.prototype, {
 		/**
-		 * View's main/root DOM element wrapped with selector 
+		 * View's main/root DOM element wrapped with selector
 		 * library (jquery, or other)
 		 * @public
 		 */
@@ -42,6 +20,22 @@ define(function(require) {
 		_events: {},
 
 		__signals: [],
+
+		set slots(slots) {
+			this._slots = inherit(this._slots, slots);
+		},
+
+		get slots() {
+			return this._slots;
+		},
+
+		set events(events) {
+			this._events = inherit(this._events, events);
+		},
+
+		get events() {
+			return this._events;
+		},
 
 		/**
 		 * Register a signal
