@@ -18,8 +18,8 @@ function(extend, View, applicationTemplate) {
 		}).bind(this));
 	};
 
-	extend(Application.prototype, View.prototype, {
-		init:function () {
+	Application.prototype = extend(View, {
+		init: function () {
 			this.$el.hide();
 
 			// Prevent from scrolling when fullscreen

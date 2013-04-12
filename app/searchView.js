@@ -36,12 +36,7 @@ function($, View, Animation, searchTemplate) {
 			e.preventDefault();
 			this.emit('search', this.$input.val());
 			return false;
-		},
-
-		/*'.search-button click': function (e) {
-			this.$el.submit();
-			e.preventDefault();
-		}*/
+		}
 	};
 
 	return SearchView;

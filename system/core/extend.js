@@ -2,14 +2,18 @@
 define(function(){
 	'use strict';
 
-	function extend(target) {
-		Array.prototype.slice.call(arguments, 1).forEach(function(source) {
+	function extend() {
+		var obj = {};
+		Array.prototype.slice.call(arguments, 0).forEach(function(source) {
+			if(typeof source === 'function')
+				source = source.prototype;
+
 			Object.keys(source).forEach(function(key) {
 				var descriptor = Object.getOwnPropertyDescriptor(source, key);
-				Object.defineProperty(target, key, descriptor);
+				Object.defineProperty(obj, key, descriptor);
 			});
 		});
-		return target;
+		return obj;
 	}
 
 	return extend;

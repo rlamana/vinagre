@@ -1,13 +1,13 @@
-define([
-	'system/selector',
-	'system/view',
-	'system/ui/animation',
-
-	'app/resultsPresenter',
-	'app/resultsListView'
-],
-function($, View, Animation, ResultsPresenter, ResultsListView) {
+define(function(require) {
 	'use strict';
+
+	var extend = require('system/core/extend');
+
+	var $ = require('system/selector');
+	var View = require('system/view');
+
+	var ResultsPresenter = require('app/resultsPresenter');
+	var ResultsListView = require('app/resultsListView');
 
 	var ResultsView = function() {
 		View.call(this);
@@ -21,24 +21,24 @@ function($, View, Animation, ResultsPresenter, ResultsListView) {
 		this.registerSignals(['search']);
 	};
 
-	ResultsView.prototype = Object.create(View.prototype);
+	ResultsView.prototype = extend(View, {
+		search: function (keywords) {
+			this.emit('search', keywords||'');
+		},
 
-	ResultsView.prototype.search = function (keywords) {
-		this.emit('search', keywords||'');
-	};
+		render: function (data) {
+			var list = new ResultsListView(data);
 
-	ResultsView.prototype.render = function (data) {
-		var list = new ResultsListView(data);
+			if(this.listView)
+				this.listView.remove();
 
-		if(this.listView)
-			this.listView.remove();
+			this.listView = list;
+			this.listView.appendTo(this.$el);
+		},
 
-		this.listView = list;
-		this.listView.appendTo(this.$el);
-	};
-
-	ResultsView.prototype.events = {
-	};
+		events: {
+		}
+	});
 
 	return ResultsView;
 });

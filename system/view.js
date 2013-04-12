@@ -1,14 +1,15 @@
 define(function(require) {
 	'use strict';
 
-	var inherit = require('system/core/inherit');
+	var extend = require('system/core/extend');
+	var inject = require('system/core/inject');
 	var Emitter = require('system/core/emitter');
 
 	var View = function() {
 		Emitter.call(this);
 	};
 
-	View.prototype = inherit(Emitter.prototype, {
+	View.prototype = extend(View, Emitter, {
 		/**
 		 * View's main/root DOM element wrapped with selector
 		 * library (jquery, or other)
@@ -22,7 +23,7 @@ define(function(require) {
 		__signals: [],
 
 		set slots(slots) {
-			this._slots = inherit(this._slots, slots);
+			this._slots = inject(this._slots, slots);
 		},
 
 		get slots() {
@@ -30,7 +31,7 @@ define(function(require) {
 		},
 
 		set events(events) {
-			this._events = inherit(this._events, events);
+			this._events = inject(this._events, events);
 		},
 
 		get events() {
@@ -82,7 +83,7 @@ define(function(require) {
 	 * puts the call at the end of the call queue.
 	 * @static
 	 */
-	View.queue = function(func, scope, time) {
+	View.queue = function queue(func, scope, time) {
 		setTimeout(func.bind(scope), time || 0);
 	};
 

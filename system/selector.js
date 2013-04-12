@@ -1,53 +1,14 @@
 
-define(['$', 'Underscore'], function($, _) {
+define(function(require) {
+	'use strict';
+
 	var splitter = /^(?:(.*)\s)?(\w+)$/;
 
-	var transitionEventNames = "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd";
-	var animationEventNames = "animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd";
+	var $ = require('$');
+	var _ = require('Underscore');
 
-	// CSS3 transform, transition, animation hooks, prefixless
-	var hooks = ['transform', 'transition', 'animation', 'transform-origin'];
-	for(var i=hooks.length;i--;) {
-		(function(property) {
-			$.cssHooks[property] = {
-				get: function( elem, computed, extra ) {
-					return null;
-				},
-				set: function(elem, value) {
-					elem.style['-webkit-'+property] = value;
-					elem.style['-moz-'+property] = value;
-					elem.style['-ms-'+property] = value;
-					elem.style['-o-'+property] = value;
-					elem.style[property] = value;
-				}
-			};
-		})(hooks[i]);
-	}
-
-	// Display to support flex box
-	$.cssHooks['display'] = {
-		get: function( elem, computed, extra ) {
-			return computed;
-		},
-		set: function(elem, value) {
-			if(value === 'flex') {
-				elem.style[property] = '-webkit-flex';
-				elem.style[property] = '-moz-flex';
-				elem.style[property] = '-ms-flex';
-				elem.style[property] = '-o-flex';
-				elem.style[property] = 'flex';
-
-				// Old draft w3c specification
-				elem.style[property] = '-webkit-box';
-				elem.style[property] = '-moz-box';
-				elem.style[property] = '-ms-box';
-				elem.style[property] = '-o-box';
-				elem.style[property] = 'box';
-			}
-
-			elem.style[property] = value;
-		}
-	};
+	var transitionEventNames = 'webkitTransitionEnd oTransitionEnd MSTransitionEnd';
+	var animationEventNames = 'webkitAnimationEnd oAnimationEnd MSAnimationEnd';
 
 	/**
 	 * Extend $ object with methods to connect

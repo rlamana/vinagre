@@ -1,13 +1,29 @@
 requirejs.config({release: true});
-/**
- * Object extend functionality.
- * Encapsulated from jQuery, underscore, or any general library
- * implementing this natural but not yet standard method.
- */
+
 define('system/core/extend',[],function(){
 	
 
-	function extend(target) {
+	function extend() {
+		var obj = {};
+		Array.prototype.slice.call(arguments, 0).forEach(function(source) {
+			if(typeof source === 'function')
+				source = source.prototype;
+
+			Object.keys(source).forEach(function(key) {
+				var descriptor = Object.getOwnPropertyDescriptor(source, key);
+				Object.defineProperty(obj, key, descriptor);
+			});
+		});
+		return obj;
+	}
+
+	return extend;
+});
+
+define('system/core/inject',[],function(){
+	
+
+	function inject(target) {
 		Array.prototype.slice.call(arguments, 1).forEach(function(source) {
 			Object.keys(source).forEach(function(key) {
 				var descriptor = Object.getOwnPropertyDescriptor(source, key);
@@ -17,7 +33,7 @@ define('system/core/extend',[],function(){
 		return target;
 	}
 
-	return extend;
+	return inject;
 });
 /**
  * Signal/slots Emitter
@@ -202,41 +218,20 @@ define('system/core/extend',[],function(){
 		root.Emitter = Emitter;
 })(this);
 
-define('system/view',['require','system/core/extend','system/core/emitter'],function(require) {
+define('system/view',['require','system/core/extend','system/core/inject','system/core/emitter'],function(require) {
 	
 
 	var extend = require('system/core/extend');
+	var inject = require('system/core/inject');
 	var Emitter = require('system/core/emitter');
 
 	var View = function() {
 		Emitter.call(this);
 	};
 
-	View.prototype = Object.create(Object.prototype, {
-		slots: {
-			set: function(slots) {
-				this._slots = extend({}, this._slots, slots);
-			},
-
-			get: function() {
-				return this._slots;
-			}
-		},
-
-		events: {
-			set: function(events) {
-				this._events = extend({}, this._events, events);
-			},
-
-			get: function() {
-				return this._events;
-			}
-		}
-	});
-
-	View.prototype = extend(View.prototype, Emitter.prototype, {
+	View.prototype = extend(View, Emitter, {
 		/**
-		 * View's main/root DOM element wrapped with selector 
+		 * View's main/root DOM element wrapped with selector
 		 * library (jquery, or other)
 		 * @public
 		 */
@@ -246,6 +241,22 @@ define('system/view',['require','system/core/extend','system/core/emitter'],func
 		_events: {},
 
 		__signals: [],
+
+		set slots(slots) {
+			this._slots = inject(this._slots, slots);
+		},
+
+		get slots() {
+			return this._slots;
+		},
+
+		set events(events) {
+			this._events = inject(this._events, events);
+		},
+
+		get events() {
+			return this._events;
+		},
 
 		/**
 		 * Register a signal
@@ -292,7 +303,7 @@ define('system/view',['require','system/core/extend','system/core/emitter'],func
 	 * puts the call at the end of the call queue.
 	 * @static
 	 */
-	View.queue = function(func, scope, time) {
+	View.queue = function queue(func, scope, time) {
 		setTimeout(func.bind(scope), time || 0);
 	};
 
@@ -2274,16 +2285,18 @@ define('tpl',['handlebars'], function(Handlebars) {
 define('system/tpl/application.tpl',['handlebars'], function(Handlebars) {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['application.tpl'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
-  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
   buffer += "<div class=\"app app-";
-  foundHelper = helpers.appname;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.appname; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\"></div>";
-  return buffer;});
+  if (stack1 = helpers.appname) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.appname; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"></div>";
+  return buffer;
+  });
 });
 
 define('css',[],function() {
@@ -2352,8 +2365,8 @@ function(extend, View, applicationTemplate) {
 		}).bind(this));
 	};
 
-	extend(Application.prototype, View.prototype, {
-		init:function () {
+	Application.prototype = extend(View, {
+		init: function () {
 			this.$el.hide();
 
 			// Prevent from scrolling when fullscreen
@@ -3581,55 +3594,16 @@ define("Underscore", (function (global) {
 }(this)));
 
 
-define('system/selector',['$', 'Underscore'], function($, _) {
+define('system/selector',['require','$','Underscore'],function(require) {
+	
+
 	var splitter = /^(?:(.*)\s)?(\w+)$/;
 
-	var transitionEventNames = "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd";
-	var animationEventNames = "animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd";
+	var $ = require('$');
+	var _ = require('Underscore');
 
-	// CSS3 transform, transition, animation hooks, prefixless
-	var hooks = ['transform', 'transition', 'animation', 'transform-origin'];
-	for(var i=hooks.length;i--;) {
-		(function(property) {
-			$.cssHooks[property] = {
-				get: function( elem, computed, extra ) {
-					return null;
-				},
-				set: function(elem, value) {
-					elem.style['-webkit-'+property] = value;
-					elem.style['-moz-'+property] = value;
-					elem.style['-ms-'+property] = value;
-					elem.style['-o-'+property] = value;
-					elem.style[property] = value;
-				}
-			};
-		})(hooks[i]);
-	}
-
-	// Display to support flex box
-	$.cssHooks['display'] = {
-		get: function( elem, computed, extra ) {
-			return computed;
-		},
-		set: function(elem, value) {
-			if(value === 'flex') {
-				elem.style[property] = '-webkit-flex';
-				elem.style[property] = '-moz-flex';
-				elem.style[property] = '-ms-flex';
-				elem.style[property] = '-o-flex';
-				elem.style[property] = 'flex';
-
-				// Old draft w3c specification
-				elem.style[property] = '-webkit-box';
-				elem.style[property] = '-moz-box';
-				elem.style[property] = '-ms-box';
-				elem.style[property] = '-o-box';
-				elem.style[property] = 'box';
-			}
-
-			elem.style[property] = value;
-		}
-	};
+	var transitionEventNames = 'webkitTransitionEnd oTransitionEnd MSTransitionEnd';
+	var animationEventNames = 'webkitAnimationEnd oAnimationEnd MSAnimationEnd';
 
 	/**
 	 * Extend $ object with methods to connect
@@ -3756,11 +3730,13 @@ function($) {
 define('app/tpl/search.tpl',['handlebars'], function(Handlebars) {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['search.tpl'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<form>\n	<button class=\"search-button\"><i class=\"icon-search-2\"></i></button>\n	<input class=\"search\" type=\"text\" placeholder=\"Enter search\" />\n</form>";});
+  return "<form>\n	<button class=\"search-button\"><i class=\"icon-search-2\"></i></button>\n	<input class=\"search\" type=\"text\" placeholder=\"Enter search\" />\n</form>";
+  });
 });
 
 define('app/searchView',[
@@ -3801,12 +3777,7 @@ function($, View, Animation, searchTemplate) {
 			e.preventDefault();
 			this.emit('search', this.$input.val());
 			return false;
-		},
-
-		/*'.search-button click': function (e) {
-			this.$el.submit();
-			e.preventDefault();
-		}*/
+		}
 	};
 
 	return SearchView;
@@ -3878,32 +3849,34 @@ define('app/resultsPresenter',['$', 'Underscore'], function ($, _) {
 define('app/tpl/result.tpl',['handlebars'], function(Handlebars) {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['result.tpl'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
-  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
   buffer += "<li data-id=\"";
-  foundHelper = helpers.id;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">\n	<h1>";
-  foundHelper = helpers.name;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "</h1>\n	<p class=\"description\">";
-  foundHelper = helpers.description;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.description; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "</p>\n	<a class=\"url\" href=\"";
-  foundHelper = helpers.url;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "\">";
-  foundHelper = helpers.url;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "</a>\n</li>";
-  return buffer;});
+  if (stack1 = helpers.id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n	<h1>";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n	<p class=\"description\">";
+  if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.description; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</p>\n	<a class=\"url\" href=\"";
+  if (stack1 = helpers.url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a>\n</li>";
+  return buffer;
+  });
 });
 
 define('app/resultsListView',[
@@ -3962,16 +3935,16 @@ function($, View, Animation, resultTemplate) {
 
 	return ResultsListView;
 });
-define('app/resultsView',[
-	'system/selector',
-	'system/view',
-	'system/ui/animation',
-
-	'app/resultsPresenter',
-	'app/resultsListView'
-],
-function($, View, Animation, ResultsPresenter, ResultsListView) {
+define('app/resultsView',['require','system/core/extend','system/selector','system/view','app/resultsPresenter','app/resultsListView'],function(require) {
 	
+
+	var extend = require('system/core/extend');
+
+	var $ = require('system/selector');
+	var View = require('system/view');
+
+	var ResultsPresenter = require('app/resultsPresenter');
+	var ResultsListView = require('app/resultsListView');
 
 	var ResultsView = function() {
 		View.call(this);
@@ -3985,24 +3958,24 @@ function($, View, Animation, ResultsPresenter, ResultsListView) {
 		this.registerSignals(['search']);
 	};
 
-	ResultsView.prototype = Object.create(View.prototype);
+	ResultsView.prototype = extend(View, {
+		search: function (keywords) {
+			this.emit('search', keywords||'');
+		},
 
-	ResultsView.prototype.search = function (keywords) {
-		this.emit('search', keywords||'');
-	};
+		render: function (data) {
+			var list = new ResultsListView(data);
 
-	ResultsView.prototype.render = function (data) {
-		var list = new ResultsListView(data);
+			if(this.listView)
+				this.listView.remove();
 
-		if(this.listView)
-			this.listView.remove();
+			this.listView = list;
+			this.listView.appendTo(this.$el);
+		},
 
-		this.listView = list;
-		this.listView.appendTo(this.$el);
-	};
-
-	ResultsView.prototype.events = {
-	};
+		events: {
+		}
+	});
 
 	return ResultsView;
 });
